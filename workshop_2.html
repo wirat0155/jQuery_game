@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <style>
+        .grid-container {
+            display: grid;
+            width: 300px;
+            grid-template-columns: auto auto auto;
+            padding: 10px;
+        }
+        .grid-item {
+            background-color: tomato;
+            border: 1px solid white;
+            padding: 20px;
+            font-size: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h3>Timer: <span id="timer">00:00</span></h3>
+    <button onclick="stop_time()">Pause</button>
+    <div class="grid-container">
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        // สุ่มตำแหน่งเลข
+        const array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const shuffled_array = array.sort((a, b) => 0.5 - Math.random());
+
+        // แสดงกล่อง 9 กล่อง
+        function show_grid() {
+            let html = "";
+            for (let i = 0; i < 9; i++) {
+                html += `<div class="grid-item item-${shuffled_array[i]}" onclick="hide_item(${shuffled_array[i]})">${shuffled_array[i]}</div>`;
+            }
+            $(".grid-container").append(html);
+        }
+        show_grid();
+        
+        // ซ่อนกล่อง
+        function hide_item(number) {
+            $(".item-" + number).css("visibility", "hidden");
+            if (number == next_number) {
+                next_number++;
+                console.log("ตัวเลขถูก");
+            }else {
+                console.log("ตัวเลขผิด");
+                stop_time();
+                show_game_over();
+                
+            }
+            if (check_win()) {
+                stop_time();
+                show_game_win();
+            }
+        }
+
+        // ทำให้คลิ๊กกล่องแล้วไม่ซ่อน
+        function remove_click_hide() {
+            for (let i = 1; i <= 10; i++) {
+                $(".item-" + i).attr("onclick", "");
+            }
+        }
+        
+        // ตรวจสอบว่าชนะหรือยัง
+        // ถ้ายังมีกล่องที่ยังมองเห็นอยู่ (ยังซ่อนไม่หมด) = ยังไม่ชนะ
+        // ถ้าไม่มีกล่องแล้ว = ชนะ
+        let next_number = 1;
+        function check_win() {
+            for (let i = 1; i < 10; i++) {
+                let value = $(".item-" + i).css("visibility");
+                if (value == "visible")
+                    return false;
+                }
+            return true;
+        }
+
+        // สร้างตัวจับเวลา
+        let min = 0;
+        let second = 0;
+        let min_str = "";
+        let second_str = "";
+        var myTimer = setInterval(function () {
+            second++;
+            if (second == 60) {
+                second = 0;
+                min++;
+            }
+            
+            if (second < 10) {
+                second_str = `0${second}`;
+            } else {
+                second_str = `${second}`;
+            }
+            if (min < 10) {
+                min_str = `0${min}`;
+            }
+            $("#timer").html(`${min_str}:${second_str}`);
+        }, 1000);
+
+        // หยุดเวลา
+        function stop_time() {
+            clearInterval(myTimer);
+        }
+
+        // แสดงข้อความเกมชนะ
+        function show_game_over() {
+            $("#result").html("<h2>Game Over</h2>");
+            remove_click_hide();
+        }
+        // แสดงข้อความเกทแพ้ 
+        function show_game_win() {
+            $("#result").html("<h2>Victory, you win</h2>");
+        }
+    </script>
+</body>
+</html>
